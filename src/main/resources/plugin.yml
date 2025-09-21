@@ -1,0 +1,7 @@
+name: auth-bridge
+version: '0.1'
+main: io.github.kosyakmakc.authBridge.MinecraftPlatform.paper.AuthBridgePaper
+api-version: '1.21'
+authors: [ kosyakmakc ]
+depend: [tgbridge]
+folia-supported: true
