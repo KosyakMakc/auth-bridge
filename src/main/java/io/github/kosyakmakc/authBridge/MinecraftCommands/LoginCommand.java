@@ -21,9 +21,10 @@ public class LoginCommand extends MinecraftCommandBase {
 
     @Override
     public boolean canExecute(MinecraftUser sender, String[] args) {
-        return sender != null
-            && args.length == 1
-            && args[0].equalsIgnoreCase("login");
+        return sender != null;
+//        return sender != null
+//            && args.length == 1
+//            && args[0].equalsIgnoreCase("login");
     }
 
     @Override
@@ -49,5 +50,10 @@ public class LoginCommand extends MinecraftCommandBase {
             logger.log(Level.SEVERE, "failed save auth session to database", e);
             sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.INTERNAL_SERVER_ERROR), new HashMap<>());
         }
+    }
+
+    @Override
+    public String getLiteral() {
+        return "login";
     }
 }
