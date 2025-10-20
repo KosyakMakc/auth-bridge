@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id("xyz.jpenilla.run-paper") version "2.3.1"
     id 'com.gradleup.shadow' version '8.3.9'
+    id 'org.jetbrains.kotlin.jvm' version '2.2.20'
 }
 
 group = 'io.github.kosyakmakc'
@@ -13,18 +14,17 @@ repositories {
         name = "papermc-repo"
         url = "https://repo.papermc.io/repository/maven-public/"
     }
-//    maven {
-//        name = "tgbridge"
-//        url = "https://maven.pkg.github.com/vanutp/tgbridge"
-//    }
+   maven {
+       name = "tgbridge"
+       url = "https://mvn.vtp.sh/main"
+   }
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     implementation "com.j256.ormlite:ormlite-core:6.1"
     implementation "com.j256.ormlite:ormlite-jdbc:6.1"
-    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
-    //implementation 'dev.vanutp.tgbridge:common:0.1-SNAPSHOT'
+    implementation("dev.vanutp.tgbridge:common:0.1-SNAPSHOT")
 }
 
 tasks {

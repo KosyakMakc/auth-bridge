@@ -3,8 +3,7 @@ package io.github.kosyakmakc.authBridge.SocialPlatforms.TelegramPlatform;
 import dev.vanutp.tgbridge.common.TelegramBridge;
 import dev.vanutp.tgbridge.common.TgbridgeEvents;
 import dev.vanutp.tgbridge.common.compat.AbstractCompat;
-import tgbridge.shaded.kotlin.Pair;
-import tgbridge.shaded.kotlin.Unit;
+import kotlin.Pair;
 
 public class AppendAuthorizedNameIntegration extends AbstractCompat {
     private final TelegramPlatform socialPlatform;
@@ -23,7 +22,7 @@ public class AppendAuthorizedNameIntegration extends AbstractCompat {
                 chatEvent.getPlaceholders().addPlain(new Pair<>("authBridge-minecraftName", mcPlayer.getName()));
             }
 
-            return Unit.INSTANCE;
+            return null;
         });
     }
 }
