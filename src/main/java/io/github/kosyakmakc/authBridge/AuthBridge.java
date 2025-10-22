@@ -1,10 +1,10 @@
 package io.github.kosyakmakc.authBridge;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import io.github.kosyakmakc.authBridge.Commands.MinecraftCommands.IMinecraftCommand;
+import io.github.kosyakmakc.authBridge.Commands.SocialCommands.ISocialCommand;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.*;
-import io.github.kosyakmakc.authBridge.MinecraftCommands.IMinecraftCommand;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.IMinecraftPlatform;
-import io.github.kosyakmakc.authBridge.SocialCommands.ISocialCommand;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.ISocialPlatform;
 
 import java.io.IOException;

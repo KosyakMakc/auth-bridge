@@ -1,11 +1,11 @@
 package io.github.kosyakmakc.authBridge;
 
+import io.github.kosyakmakc.authBridge.Commands.MinecraftCommands.IMinecraftCommand;
+import io.github.kosyakmakc.authBridge.Commands.SocialCommands.ISocialCommand;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.ConfigurationService;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.IDatabaseConsumer;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.LocalizationService;
-import io.github.kosyakmakc.authBridge.MinecraftCommands.IMinecraftCommand;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.IMinecraftPlatform;
-import io.github.kosyakmakc.authBridge.SocialCommands.ISocialCommand;
 
 import java.sql.SQLException;
 import java.util.List;

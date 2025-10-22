@@ -3,6 +3,7 @@ package io.github.kosyakmakc.authBridge.SocialPlatforms.TelegramPlatform;
 import dev.vanutp.tgbridge.common.TelegramBridge;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.Tables.Association_telegram;
 import io.github.kosyakmakc.authBridge.IAuthBridge;
+import io.github.kosyakmakc.authBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.MinecraftUser;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.AuthorizeDuplicationException;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.ISocialPlatform;
@@ -29,9 +30,13 @@ public class TelegramPlatform implements ISocialPlatform {
 
         tgBridge.addIntegration(new AppendAuthorizedNameIntegration(this, tgBridge));
         for (var socialCommand : bridge.getSocialCommands()) {
-            tgBridge.getBot().registerCommandHandler(socialCommand.getCommandName(), (tgMessage, continuation) -> {
-                var user = new TelegramUser(self, tgMessage.getFrom());
-                socialCommand.handle(user, tgMessage.getEffectiveText().split("\\s+"));
+            tgBridge.getBot().registerCommandHandler(socialCommand.getLiteral(), (tgMessage, continuation) -> {
+                var sender = new TelegramUser(self, tgMessage.getFrom());
+                try {
+                    socialCommand.handle(sender, tgMessage.getEffectiveText());
+                } catch (ArgumentFormatException e) {
+                    sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), e.getMessageKey()), new HashMap<String, String>());
+                }
                 return null;
             });
         }

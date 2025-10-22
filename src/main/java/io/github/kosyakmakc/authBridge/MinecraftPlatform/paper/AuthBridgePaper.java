@@ -2,9 +2,12 @@ package io.github.kosyakmakc.authBridge.MinecraftPlatform.paper;
 
 import io.github.kosyakmakc.authBridge.AuthBridge;
 import io.github.kosyakmakc.authBridge.IAuthBridge;
-import io.github.kosyakmakc.authBridge.MinecraftCommands.MinecraftCommandBase;
+import io.github.kosyakmakc.authBridge.Commands.ICommand;
+import io.github.kosyakmakc.authBridge.Commands.Arguments.ArgumentFormatException;
+import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.MinecraftUser;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.Bukkit;
@@ -12,12 +15,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.LongArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import static com.mojang.brigadier.Command.SINGLE_SUCCESS;
 
@@ -33,34 +46,86 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
             new PaperEventListener(this);
 
             this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-                var commandsBuilder = Commands.literal(MinecraftCommandBase.baseSuffixCommand);
+                var commandsBuilder = Commands.literal(ICommand.baseSuffixCommand);
 
                 for(var bridgeCommand : authBridge.getMinecraftCommands()) {
-                    getLogger().info("[DEBUG] registering command - /" + MinecraftCommandBase.baseSuffixCommand + " " + bridgeCommand.getLiteral());
-                    commandsBuilder.then(Commands
+                    getLogger().info("[DEBUG] registering command - /"
+                     + ICommand.baseSuffixCommand + ' '
+                      + bridgeCommand.getLiteral() + ' '
+                       + bridgeCommand.getArgumentDefinitions().stream().map(x -> '{' + x.getName() + '}').collect(Collectors.joining(" ")));
+                    
+                    var cmd = Commands
                             .literal(bridgeCommand.getLiteral())
-                            .requires(sender -> sender.getSender().hasPermission(bridgeCommand.getPermission()))
-                            .executes(ctx -> {
-                                getLogger().info("[DEBUG] command executed");
-                                var sender = ctx.getSource().getSender();
+                            .requires(sender -> sender.getSender().hasPermission(bridgeCommand.getPermission()));
+                    for (var argument : bridgeCommand.getArgumentDefinitions()) {
+                        var argumentNode = BuildArgumentNode(argument);
 
-                                var mcPlatformUser = sender instanceof Player player ? new BukkitMinecraftUser(player) : null;
-                                bridgeCommand.handle(mcPlatformUser, new String[0]);
+                        cmd = cmd.then(argumentNode);
+                    }
 
-                                return SINGLE_SUCCESS;
-                            }));
+                    cmd.executes(ctx -> {
+                        getLogger().info("[DEBUG] command executed");
+                        var sender = ctx.getSource().getSender();
+
+                        var mcPlatformUser = sender instanceof Player player ? new BukkitMinecraftUser(player) : null;
+                        try {
+                            bridgeCommand.handle(mcPlatformUser, ctx.getInput());
+                        } catch (ArgumentFormatException e) {
+                            mcPlatformUser.sendMessage(authBridge.getLocalizationService().getMessage(mcPlatformUser.getLocale(), e.getMessageKey()), new HashMap<>());
+                        }
+
+                        return SINGLE_SUCCESS;
+                    });
+
+                    commandsBuilder.then(cmd);
                 }
 
                 commands.registrar().register(commandsBuilder.build());
-
-                commands.registrar().register(Commands.literal("ks-test").executes(ctx -> {
-
-                    getLogger().info("[DEBUG] ks-test");
-                    return SINGLE_SUCCESS;
-                }).build());
             });
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private ArgumentBuilder<CommandSourceStack, ?> BuildArgumentNode(CommandArgument argument) {
+        var commandName = argument.getName();
+        var dataType = argument.getDataType();
+        
+        switch (dataType) {
+            case Boolean:
+                return Commands
+                        .argument(commandName, BoolArgumentType.bool())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case Integer:
+                return Commands
+                        .argument(commandName, IntegerArgumentType.integer())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case Long:
+                return Commands
+                        .argument(commandName, LongArgumentType.longArg())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case Float:
+                return Commands
+                        .argument(commandName, FloatArgumentType.floatArg())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case Double:
+                return Commands
+                        .argument(commandName, DoubleArgumentType.doubleArg())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case Word:
+                return Commands
+                        .argument(commandName, StringArgumentType.word())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case String:
+                return Commands
+                        .argument(commandName, StringArgumentType.string())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            case GreedyString:
+                return Commands
+                        .argument(commandName, StringArgumentType.greedyString())
+                        .suggests(new BridgeCommandSuggestionProvider(argument));
+            default:
+                throw new RuntimeException("");
         }
     }
 

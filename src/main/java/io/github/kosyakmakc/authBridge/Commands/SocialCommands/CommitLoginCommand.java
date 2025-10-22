@@ -1,8 +1,8 @@
-package io.github.kosyakmakc.authBridge.SocialCommands;
+package io.github.kosyakmakc.authBridge.Commands.SocialCommands;
 
 import io.github.kosyakmakc.authBridge.DatabasePlatform.Tables.AuthSession;
 import io.github.kosyakmakc.authBridge.MessageKey;
-import io.github.kosyakmakc.authBridge.Permissions;
+import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.AuthorizeDuplicationException;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.SocialUser;
 
@@ -10,27 +10,24 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.UUID;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 
 public class CommitLoginCommand extends SocialCommandBase {
     public CommitLoginCommand() {
-        super("authBridge-login", Permissions.NO_PERMISSION);
+        super(
+            "auth-login",
+            List.of(
+                CommandArgument.ofInteger("auth-code")));
     }
 
     @Override
-    public boolean canExecute(SocialUser sender, String[] args) {
-        return sender != null
-                && args.length == 2
-                && args[0].equalsIgnoreCase("login");
-    }
-
-    @Override
-    public void execute(SocialUser sender, String[] args) {
+    public void execute(SocialUser sender, List<Object> args) {
         var bridge = getBridge();
         var logger = bridge.getLogger();
 
+        var authCode = (int) args.get(0);
         var placeholders = new HashMap<String, String>();
 
         try {
@@ -39,7 +36,7 @@ public class CommitLoginCommand extends SocialCommandBase {
                 var availableSessions = database.sessions.queryBuilder()
                         .orderBy(AuthSession.EXPIRED_AT_FIELD_NAME, true)
                         .where()
-                        .eq(AuthSession.MINECRAFT_ID_FIELD_NAME, UUID.fromString(args[1]))
+                        .eq(AuthSession.AUTH_CODE_FIELD_NAME, authCode)
                         .and()
                         .eq(AuthSession.IS_SPENT_FIELD_NAME, false)
                         .and()

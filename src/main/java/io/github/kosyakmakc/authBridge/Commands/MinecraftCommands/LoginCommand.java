@@ -1,4 +1,4 @@
-package io.github.kosyakmakc.authBridge.MinecraftCommands;
+package io.github.kosyakmakc.authBridge.Commands.MinecraftCommands;
 
 import io.github.kosyakmakc.authBridge.DatabasePlatform.Tables.AuthSession;
 import io.github.kosyakmakc.authBridge.MessageKey;
@@ -8,6 +8,7 @@ import io.github.kosyakmakc.authBridge.Permissions;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -20,15 +21,7 @@ public class LoginCommand extends MinecraftCommandBase {
     }
 
     @Override
-    public boolean canExecute(MinecraftUser sender, String[] args) {
-        return sender != null;
-//        return sender != null
-//            && args.length == 1
-//            && args[0].equalsIgnoreCase("login");
-    }
-
-    @Override
-    public void execute(MinecraftUser sender, String[] args) {
+    public void execute(MinecraftUser sender, List<Object> args) {
         var bridge = getBridge();
         var logger = bridge.getLogger();
 
@@ -50,10 +43,5 @@ public class LoginCommand extends MinecraftCommandBase {
             logger.log(Level.SEVERE, "failed save auth session to database", e);
             sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.INTERNAL_SERVER_ERROR), new HashMap<>());
         }
-    }
-
-    @Override
-    public String getLiteral() {
-        return "login";
     }
 }
