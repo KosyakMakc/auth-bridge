@@ -1,15 +1,13 @@
 package io.github.kosyakmakc.authBridge.SocialPlatforms.TelegramPlatform;
 
-import dev.vanutp.tgbridge.common.TelegramBridge;
 import dev.vanutp.tgbridge.common.TgbridgeEvents;
-import dev.vanutp.tgbridge.common.compat.AbstractCompat;
+import dev.vanutp.tgbridge.common.compat.ITgbridgeCompat;
 import kotlin.Pair;
 
-public class AppendAuthorizedNameIntegration extends AbstractCompat {
+public class AppendAuthorizedNameIntegration implements ITgbridgeCompat {
     private final TelegramPlatform socialPlatform;
 
-    public AppendAuthorizedNameIntegration(TelegramPlatform socialPlatform, TelegramBridge bridge) {
-        super(bridge);
+    public AppendAuthorizedNameIntegration(TelegramPlatform socialPlatform) {
         this.socialPlatform = socialPlatform;
     }
 
@@ -24,5 +22,10 @@ public class AppendAuthorizedNameIntegration extends AbstractCompat {
 
             return null;
         });
+    }
+
+    @Override
+    public boolean shouldEnable() {
+        return true;
     }
 }

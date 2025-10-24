@@ -24,7 +24,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     implementation "com.j256.ormlite:ormlite-core:6.1"
     implementation "com.j256.ormlite:ormlite-jdbc:6.1"
-    implementation("dev.vanutp.tgbridge:common:0.1-SNAPSHOT")
+    compileOnly("dev.vanutp.tgbridge:common:0.1-SNAPSHOT")
 }
 
 runPaper.folia.registerTask()

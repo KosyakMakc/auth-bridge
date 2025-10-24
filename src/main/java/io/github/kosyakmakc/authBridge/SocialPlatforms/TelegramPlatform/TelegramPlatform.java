@@ -28,7 +28,7 @@ public class TelegramPlatform implements ISocialPlatform {
 
         var self = this;
 
-        tgBridge.addIntegration(new AppendAuthorizedNameIntegration(this, tgBridge));
+        tgBridge.addIntegration(new AppendAuthorizedNameIntegration(this));
         for (var socialCommand : bridge.getSocialCommands()) {
             tgBridge.getBot().registerCommandHandler(socialCommand.getLiteral(), (tgMessage, continuation) -> {
                 var sender = new TelegramUser(self, tgMessage.getFrom());
