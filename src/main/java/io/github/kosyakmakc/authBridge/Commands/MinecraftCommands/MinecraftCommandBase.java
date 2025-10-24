@@ -8,11 +8,14 @@ import java.util.List;
 
 import io.github.kosyakmakc.authBridge.IAuthBridge;
 import io.github.kosyakmakc.authBridge.Permissions;
+import io.github.kosyakmakc.authBridge.Commands.ICommand;
 import io.github.kosyakmakc.authBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.MinecraftUser;
 
 public abstract class MinecraftCommandBase implements IMinecraftCommand {
+    private static final CommandArgument baseSuffixCommand = CommandArgument.ofWord(ICommand.baseSuffixCommand);
+
     private final String literal;
     private final String permission;
     private final List<CommandArgument> argumentDefinition;
@@ -72,6 +75,9 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
 
         var reader = new StringReader(args);
         var arguments = new LinkedList<Object>();
+
+        // pumping base suffix in reader
+        baseSuffixCommand.getValue(reader);
 
         for (var argument : getArgumentDefinitions()) {
             var valueItem = argument.getValue(reader);

@@ -73,7 +73,6 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
                         } catch (ArgumentFormatException e) {
                             mcPlatformUser.sendMessage(authBridge.getLocalizationService().getMessage(mcPlatformUser.getLocale(), e.getMessageKey()), new HashMap<>());
                         }
-
                         return SINGLE_SUCCESS;
                     });
 

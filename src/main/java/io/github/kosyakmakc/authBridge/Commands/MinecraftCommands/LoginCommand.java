@@ -16,7 +16,7 @@ public class LoginCommand extends MinecraftCommandBase {
     private final Random random;
 
     public LoginCommand() {
-        super(Permissions.CAN_LOGIN);
+        super("login", Permissions.CAN_LOGIN);
         random = new Random(System.currentTimeMillis());
     }
 
