@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-class WordCommandArgument extends CommandArgument<String> {
+class DoubleCommandArgument extends CommandArgument<Double> {
     private final String name;
 
-    public WordCommandArgument(String name) {
+    public DoubleCommandArgument(String name) {
         this.name = name;
     }
 
     @Override
     public CommandArgumentDataType getDataType() {
-        return CommandArgumentDataType.String;
+        return CommandArgumentDataType.Double;
     }
 
     @Override
@@ -27,9 +27,9 @@ class WordCommandArgument extends CommandArgument<String> {
     public String[] getAutoCompletes() {
         return new String[0];
     }
-
+    
     @Override
-    public String getValue(StringReader args) throws ArgumentFormatException {
+    public Double getValue(StringReader args) throws ArgumentFormatException {
         var wordWriter = new StringWriter();
         var charCode = -1;
 
@@ -47,12 +47,10 @@ class WordCommandArgument extends CommandArgument<String> {
             throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT);
         }
 
-        var word = wordWriter.toString();
-
-        if (word.isBlank()) {
-            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_ARE_EMPTY);
+        try {
+            return Double.parseDouble(wordWriter.toString());
+        } catch (NumberFormatException e) {
+            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_NOT_A_DOUBLE);
         }
-
-        return word;
     }
 }

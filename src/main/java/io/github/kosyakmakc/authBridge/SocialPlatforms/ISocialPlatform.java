@@ -18,4 +18,6 @@ public interface ISocialPlatform {
     void sendMessage(TelegramUser telegramUser, String message, HashMap<String, String> placeholders);
 
     @Nullable MinecraftUser tryGetMinecraftUser(SocialUser socialUser);
+
+    boolean logoutUser(SocialUser sender);
 }

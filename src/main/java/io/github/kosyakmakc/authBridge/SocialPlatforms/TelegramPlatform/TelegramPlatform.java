@@ -3,11 +3,15 @@ package io.github.kosyakmakc.authBridge.SocialPlatforms.TelegramPlatform;
 import dev.vanutp.tgbridge.common.TelegramBridge;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.Tables.Association_telegram;
 import io.github.kosyakmakc.authBridge.IAuthBridge;
-import io.github.kosyakmakc.authBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.authBridge.MinecraftPlatform.MinecraftUser;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.AuthorizeDuplicationException;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.ISocialPlatform;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.SocialUser;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.minimessage.tag.standard.StandardTags;
 import org.jetbrains.annotations.Nullable;
 
 import java.sql.SQLException;
@@ -21,6 +25,10 @@ public class TelegramPlatform implements ISocialPlatform {
     private IAuthBridge bridge;
     private TelegramBridge tgBridge;
 
+    public TelegramPlatform() {
+
+    }
+
     @Override
     public void setAuthBridge(IAuthBridge bridge) {
         this.bridge = bridge;
@@ -28,18 +36,13 @@ public class TelegramPlatform implements ISocialPlatform {
 
         var self = this;
 
-        tgBridge.addIntegration(new AppendAuthorizedNameIntegration(this));
-        for (var socialCommand : bridge.getSocialCommands()) {
-            tgBridge.getBot().registerCommandHandler(socialCommand.getLiteral(), (tgMessage, continuation) -> {
-                var sender = new TelegramUser(self, tgMessage.getFrom());
-                try {
-                    socialCommand.handle(sender, tgMessage.getEffectiveText());
-                } catch (ArgumentFormatException e) {
-                    sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), e.getMessageKey()), new HashMap<String, String>());
-                }
-                return null;
-            });
-        }
+        tgBridge.addIntegration(new MessageHandlerIntegration(this));
+//        for (var socialCommand : bridge.getSocialCommands()) {
+//            tgBridge.getBot().registerCommandHandler(socialCommand.getLiteral(), (tgMessage, continuation) -> {
+//
+//                return null;
+//            });
+//        }
     }
 
     public IAuthBridge getBridge() {
@@ -89,7 +92,30 @@ public class TelegramPlatform implements ISocialPlatform {
 
     @Override
     public void sendMessage(TelegramUser telegramUser, String message, HashMap<String, String> placeholders) {
+
+        var builder = MiniMessage.builder()
+                .tags(TagResolver.builder()
+                        .resolver(StandardTags.defaults())
+                        .build());
+
+        for (var placeholderKey : placeholders.keySet()) {
+            builder.editTags(x -> x.resolver(Placeholder.component(placeholderKey, Component.text(placeholders.get(placeholderKey)))));
+        }
+        var builtMessage = builder.build().deserialize(message);
+
+
         // TODO api extend?
+//            var chatId = chatEvent.getMessage().getChat().getId();
+//            var replyToId = chatEvent.getMessage().getMessageId();
+//            socialPlatform.getTgBridge().getBot().sendMessage(
+//                    chatId,
+//                    builtMessage,
+//                    null,
+//                    replyToId,
+//                    "HTML",
+//                    true,
+//                    null);
+        this.getBridge().getLogger().info("tgMessage to \"" + telegramUser.getName() + "\" - " + builtMessage);
     }
 
     @Override
@@ -112,6 +138,42 @@ public class TelegramPlatform implements ISocialPlatform {
 
                 if (association != null) {
                     result.set(bridge.getMinecraftPlatform().getUser(association.getMinecraftId()));
+                }
+
+                return null;
+            });
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "failed get minecraft user", e);
+        }
+
+        return result.get();
+    }
+
+    @Override
+    public boolean logoutUser(SocialUser socialUser) {
+        if (!(socialUser instanceof TelegramUser tgUser)) {
+            throw new RuntimeException("incorrect usage, SocialUser(" + socialUser.getClass().getName() + ") MUST BE assigned to this ISocialPlatform(" + this.getClass().getName() + ")");
+        }
+        var bridge = getBridge();
+        var logger = bridge.getLogger();
+        var result = new AtomicBoolean(false);
+        try {
+            bridge.queryDatabase(databaseContext -> {
+                var association = databaseContext.association_telegram
+                        .queryBuilder()
+                        .where()
+                        .eq(Association_telegram.TELEGRAM_ID_FIELD_NAME, tgUser.getId())
+                        .and()
+                        .eq(Association_telegram.IS_DELETED_FIELD_NAME, false)
+                        .queryForFirst();
+
+                if (association != null) {
+                    association.Delete();
+                    databaseContext.association_telegram.update(association);
+                    result.set(true);
+                }
+                else {
+                    result.set(false);
                 }
 
                 return null;

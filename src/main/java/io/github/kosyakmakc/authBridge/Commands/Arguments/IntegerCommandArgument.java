@@ -1,12 +1,12 @@
 package io.github.kosyakmakc.authBridge.Commands.Arguments;
 
+import io.github.kosyakmakc.authBridge.MessageKey;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import io.github.kosyakmakc.authBridge.MessageKey;
-
-class IntegerCommandArgument extends CommandArgument {
+class IntegerCommandArgument extends CommandArgument<Integer> {
     private final String name;
 
     public IntegerCommandArgument(String name) {
@@ -29,7 +29,7 @@ class IntegerCommandArgument extends CommandArgument {
     }
     
     @Override
-    public Object getValue(StringReader args) throws ArgumentFormatException {
+    public Integer getValue(StringReader args) throws ArgumentFormatException {
         var wordWriter = new StringWriter();
         var charCode = -1;
 
@@ -50,7 +50,7 @@ class IntegerCommandArgument extends CommandArgument {
         try {
             return Integer.parseInt(wordWriter.toString());
         } catch (NumberFormatException e) {
-            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_NOT_A_NUMBER);
+            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_NOT_A_INTEGER);
         }
     }
 }

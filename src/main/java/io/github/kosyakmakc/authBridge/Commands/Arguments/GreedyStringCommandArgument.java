@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-class WordCommandArgument extends CommandArgument<String> {
+class GreedyStringCommandArgument extends CommandArgument<String> {
     private final String name;
 
-    public WordCommandArgument(String name) {
+    public GreedyStringCommandArgument(String name) {
         this.name = name;
     }
 
     @Override
     public CommandArgumentDataType getDataType() {
-        return CommandArgumentDataType.String;
+        return CommandArgumentDataType.GreedyString;
     }
 
     @Override
@@ -30,29 +30,14 @@ class WordCommandArgument extends CommandArgument<String> {
 
     @Override
     public String getValue(StringReader args) throws ArgumentFormatException {
-        var wordWriter = new StringWriter();
-        var charCode = -1;
+        var greedyStringWriter = new StringWriter();
 
         try {
-            while ((charCode = args.read()) != -1) {
-                var symbol = (char) charCode;
-
-                if (Character.isWhitespace(symbol)) {
-                    break;
-                }
-
-                wordWriter.write(symbol);
-            }
+            args.transferTo(greedyStringWriter);
         } catch (IOException e) {
             throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT);
         }
 
-        var word = wordWriter.toString();
-
-        if (word.isBlank()) {
-            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_ARE_EMPTY);
-        }
-
-        return word;
+        return greedyStringWriter.toString();
     }
 }

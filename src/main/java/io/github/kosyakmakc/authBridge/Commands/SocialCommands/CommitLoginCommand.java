@@ -1,8 +1,8 @@
 package io.github.kosyakmakc.authBridge.Commands.SocialCommands;
 
+import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.authBridge.DatabasePlatform.Tables.AuthSession;
 import io.github.kosyakmakc.authBridge.MessageKey;
-import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.AuthorizeDuplicationException;
 import io.github.kosyakmakc.authBridge.SocialPlatforms.SocialUser;
 
@@ -11,13 +11,13 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 public class CommitLoginCommand extends SocialCommandBase {
     public CommitLoginCommand() {
         super(
-            "auth-login",
+            "login",
             List.of(
                 CommandArgument.ofInteger("auth-code")));
     }
@@ -27,11 +27,11 @@ public class CommitLoginCommand extends SocialCommandBase {
         var bridge = getBridge();
         var logger = bridge.getLogger();
 
-        var authCode = (int) args.get(0);
+        var authCode = (int) args.getFirst();
         var placeholders = new HashMap<String, String>();
 
         try {
-            AtomicBoolean isSuccess = new AtomicBoolean(false);
+            AtomicReference<CommitLoginState> commitState = new AtomicReference<>(CommitLoginState.NotCommited);
             bridge.queryDatabase(database -> {
                 var availableSessions = database.sessions.queryBuilder()
                         .orderBy(AuthSession.EXPIRED_AT_FIELD_NAME, true)
@@ -40,12 +40,11 @@ public class CommitLoginCommand extends SocialCommandBase {
                         .and()
                         .eq(AuthSession.IS_SPENT_FIELD_NAME, false)
                         .and()
-                        .lt(AuthSession.EXPIRED_AT_FIELD_NAME, Date.from(Instant.now()))
+                        .gt(AuthSession.EXPIRED_AT_FIELD_NAME, Date.from(Instant.now()))
                         .query();
 
                 if (availableSessions.isEmpty()) {
-                    logger.info(sender.getName() + " failed to commit login");
-                    sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.COMMIT_LOGIN_FAILED), new HashMap<>());
+                    commitState.set(CommitLoginState.NotCommited);
                     return null;
                 }
 
@@ -53,9 +52,9 @@ public class CommitLoginCommand extends SocialCommandBase {
 
                 try {
                     sender.getPlatform().Authorize(sender, session.getMinecraftId());
-                    isSuccess.set(true);
+                    commitState.set(CommitLoginState.Commited);
                 } catch (AuthorizeDuplicationException e) {
-                    isSuccess.set(false);
+                    commitState.set(CommitLoginState.DuplicationError);
                 }
 
                 session.spend();
@@ -64,20 +63,32 @@ public class CommitLoginCommand extends SocialCommandBase {
                 return null;
             });
 
-            if (isSuccess.get()) {
-                logger.info(sender.getName() + " success commited login to " + sender.getPlatform().getPlatformName() + " platform");
-                placeholders.put("social-platform-name", sender.getPlatform().getPlatformName());
-                sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.COMMITED_LOGIN), placeholders);
-            }
-            else {
-                logger.info(sender.getName() + " duplicating his logins to " + sender.getPlatform().getPlatformName() + ", ignoring it...");
-                placeholders.put("social-platform-name", sender.getPlatform().getPlatformName());
-                sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.YOU_ARE_ALREADY_AUTHORIZED), placeholders);
+            placeholders.put("social-platform-name", sender.getPlatform().getPlatformName());
+            var resultState = commitState.get();
+            switch (resultState) {
+                case Commited -> {
+                    logger.info(sender.getName() + " success commited login to " + sender.getPlatform().getPlatformName() + " platform");
+                    sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.COMMITED_LOGIN), placeholders);
+                }
+                case NotCommited -> {
+                    logger.info(sender.getName() + " failed to commit login");
+                    sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.COMMIT_LOGIN_FAILED), placeholders);
+                }
+                case DuplicationError -> {
+                    logger.info(sender.getName() + " duplicating his logins to " + sender.getPlatform().getPlatformName() + ", ignoring it...");
+                    sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.YOU_ARE_ALREADY_AUTHORIZED), placeholders);
+                }
             }
         }
         catch (SQLException e) {
             logger.log(Level.SEVERE, "failed to commit login", e);
             sender.sendMessage(getBridge().getLocalizationService().getMessage(sender.getLocale(), MessageKey.INTERNAL_SERVER_ERROR), placeholders);
         }
+    }
+
+    enum CommitLoginState {
+        Commited,
+        NotCommited,
+        DuplicationError,
     }
 }

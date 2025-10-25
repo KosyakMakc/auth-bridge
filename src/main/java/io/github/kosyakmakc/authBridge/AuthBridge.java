@@ -32,7 +32,7 @@ public class AuthBridge implements IAuthBridge {
 
     private AuthBridge(IMinecraftPlatform mcPlatform) throws SQLException, IOException {
         minecraftPlatform = mcPlatform;
-        socialPlatforms = ServiceLoader.load(ISocialPlatform.class, IMinecraftCommand.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
+        socialPlatforms = ServiceLoader.load(ISocialPlatform.class, ISocialPlatform.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
 
         databaseContext = new DatabaseContext(this, new JdbcConnectionSource("jdbc:sqlite:" + Path.of(mcPlatform.getDataDirectory().toAbsolutePath().toString(), databasePath)));
 
@@ -47,18 +47,18 @@ public class AuthBridge implements IAuthBridge {
         mcCommands = ServiceLoader.load(IMinecraftCommand.class, IMinecraftCommand.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
         socialCommands = ServiceLoader.load(ISocialCommand.class, ISocialCommand.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
 
-        getLogger().info("[DEBUG] mcCommand(" + mcCommands.size() + "):");
+        getLogger().info("Minecraft commands(" + mcCommands.size() + "):");
         for (var mcCommand : mcCommands) {
             getLogger().info("\t\t" + mcCommand.getClass().getName());
             mcCommand.init(this);
         }
-        getLogger().info("[DEBUG] socialCommand(" + socialCommands.size() + "):");
+        getLogger().info("Social commands(" + socialCommands.size() + "):");
         for (var socialCommand : socialCommands) {
             getLogger().info("\t\t" + socialCommand.getClass().getName());
             socialCommand.init(this);
         }
 
-        getLogger().info("[DEBUG] socialPlatforms(" + socialPlatforms.size() + "):");
+        getLogger().info("Social platforms(" + socialPlatforms.size() + "):");
         for (var socialPlatform : socialPlatforms) {
             getLogger().info("\t\t" + socialPlatform.getClass().getName());
             socialPlatform.setAuthBridge(this);

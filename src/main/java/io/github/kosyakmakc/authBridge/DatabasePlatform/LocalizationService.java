@@ -79,7 +79,7 @@ public record LocalizationService(IAuthBridge bridge) {
         var allRecords = 0;
 
         var localizationSources = ServiceLoader.load(ITranslationSource.class, ITranslationSource.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
-        logger.info("[DEBUG] localizationSource(" + localizationSources.size() + "):");
+        logger.info("Localization sources(" + localizationSources.size() + "):");
         for (var source : localizationSources) {
             logger.info("\t\t" + source.getClass().getName());
             for (var record : source.getRecords()) {

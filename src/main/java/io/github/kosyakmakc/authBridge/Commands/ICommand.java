@@ -1,12 +1,12 @@
 package io.github.kosyakmakc.authBridge.Commands;
 
+import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
+import io.github.kosyakmakc.authBridge.IAuthBridge;
+
 import java.util.List;
 
-import io.github.kosyakmakc.authBridge.IAuthBridge;
-import io.github.kosyakmakc.authBridge.Commands.Arguments.CommandArgument;
-
 public interface ICommand {
-    public static final String baseSuffixCommand = "auth";
+    String baseSuffixCommand = "auth";
 
     void init(IAuthBridge authBridge);
     List<CommandArgument> getArgumentDefinitions();

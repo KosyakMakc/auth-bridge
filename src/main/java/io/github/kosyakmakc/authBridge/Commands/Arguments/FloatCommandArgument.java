@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-class WordCommandArgument extends CommandArgument<String> {
+class FloatCommandArgument extends CommandArgument<Float> {
     private final String name;
 
-    public WordCommandArgument(String name) {
+    public FloatCommandArgument(String name) {
         this.name = name;
     }
 
     @Override
     public CommandArgumentDataType getDataType() {
-        return CommandArgumentDataType.String;
+        return CommandArgumentDataType.Float;
     }
 
     @Override
@@ -27,9 +27,9 @@ class WordCommandArgument extends CommandArgument<String> {
     public String[] getAutoCompletes() {
         return new String[0];
     }
-
+    
     @Override
-    public String getValue(StringReader args) throws ArgumentFormatException {
+    public Float getValue(StringReader args) throws ArgumentFormatException {
         var wordWriter = new StringWriter();
         var charCode = -1;
 
@@ -47,12 +47,10 @@ class WordCommandArgument extends CommandArgument<String> {
             throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT);
         }
 
-        var word = wordWriter.toString();
-
-        if (word.isBlank()) {
-            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_ARE_EMPTY);
+        try {
+            return Float.parseFloat(wordWriter.toString());
+        } catch (NumberFormatException e) {
+            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_NOT_A_FLOAT);
         }
-
-        return word;
     }
 }

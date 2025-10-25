@@ -6,16 +6,16 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-class WordCommandArgument extends CommandArgument<String> {
+class BooleanCommandArgument extends CommandArgument<Boolean> {
     private final String name;
 
-    public WordCommandArgument(String name) {
+    public BooleanCommandArgument(String name) {
         this.name = name;
     }
 
     @Override
     public CommandArgumentDataType getDataType() {
-        return CommandArgumentDataType.String;
+        return CommandArgumentDataType.Boolean;
     }
 
     @Override
@@ -25,11 +25,11 @@ class WordCommandArgument extends CommandArgument<String> {
 
     @Override
     public String[] getAutoCompletes() {
-        return new String[0];
+        return new String[] { "True", "False"};
     }
 
     @Override
-    public String getValue(StringReader args) throws ArgumentFormatException {
+    public Boolean getValue(StringReader args) throws ArgumentFormatException {
         var wordWriter = new StringWriter();
         var charCode = -1;
 
@@ -47,12 +47,10 @@ class WordCommandArgument extends CommandArgument<String> {
             throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT);
         }
 
-        var word = wordWriter.toString();
-
-        if (word.isBlank()) {
-            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_ARE_EMPTY);
+        try {
+            return Boolean.parseBoolean(wordWriter.toString());
+        } catch (NumberFormatException e) {
+            throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_NOT_A_BOOLEAN);
         }
-
-        return word;
     }
 }

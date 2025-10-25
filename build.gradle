@@ -21,10 +21,20 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
     implementation "com.j256.ormlite:ormlite-core:6.1"
     implementation "com.j256.ormlite:ormlite-jdbc:6.1"
-    compileOnly("dev.vanutp.tgbridge:common:0.1-SNAPSHOT")
+    compileOnly "io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT"
+    compileOnly "dev.vanutp.tgbridge:common:0.1-SNAPSHOT"
+
+    // https://mvnrepository.com/artifact/com.h2database/h2
+    testImplementation("com.h2database:h2:2.4.240")
+
+    testImplementation "com.j256.ormlite:ormlite-core:6.1"
+    testImplementation "com.j256.ormlite:ormlite-jdbc:6.1"
+    testImplementation "io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT"
+    testImplementation "dev.vanutp.tgbridge:common:0.1-SNAPSHOT"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.8.2"
 }
 
 runPaper.folia.registerTask()
@@ -68,4 +78,8 @@ processResources {
     filesMatching('plugin.yml') {
         expand props
     }
+}
+
+test {
+    useJUnitPlatform()
 }
