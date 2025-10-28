@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.kotlin.jvm' version '2.2.20'
+}
+
+group = 'io.github.kosyakmakc'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "tgbridge"
+        url = "https://mvn.vtp.sh/main"
+    }
+}
+
+dependencies {
+    compileOnly "dev.vanutp.tgbridge:common:0.1-SNAPSHOT"
+    testImplementation "dev.vanutp.tgbridge:common:0.1-SNAPSHOT"
+
+    implementation "com.j256.ormlite:ormlite-core:6.1"
+    implementation "com.j256.ormlite:ormlite-jdbc:6.1"
+    testImplementation "com.j256.ormlite:ormlite-core:6.1"
+    testImplementation "com.j256.ormlite:ormlite-jdbc:6.1"
+
+    implementation project(":social-bridge")
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
