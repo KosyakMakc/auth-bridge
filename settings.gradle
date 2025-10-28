@@ -1,1 +1,7 @@
-rootProject.name = 'auth-bridge'
+rootProject.name = 'social-bridge'
+
+include "social-bridge"
+include "implementations:paper"
+
+include "social-bridge-telegram"
+include 'social-bridge-telegram:implementations:social-bridge-telegram-paper'

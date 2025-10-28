@@ -1,0 +1,7 @@
+name: social-bridge-paper
+version: '0.1'
+main: io.github.kosyakmakc.socialBridge.paper.AuthBridgePaper
+api-version: '1.21'
+authors: [ kosyakmakc ]
+#depend: [tgbridge]
+folia-supported: true
