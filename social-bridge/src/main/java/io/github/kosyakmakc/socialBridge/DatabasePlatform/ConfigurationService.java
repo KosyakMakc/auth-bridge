@@ -1,12 +1,13 @@
 package io.github.kosyakmakc.socialBridge.DatabasePlatform;
 
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.ConfigRow;
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.IConfigurationService;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 
 import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicReference;
 
-public record ConfigurationService(IAuthBridge bridge) {
+public record ConfigurationService(ISocialBridge bridge) implements IConfigurationService {
     public static final String DATABASE_VERSION = "DATABASE_VERSION";
 
     public String get(String parameter, String defaultValue) {

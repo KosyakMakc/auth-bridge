@@ -1,6 +1,7 @@
+package io.github.kosyakmakc.socialBridgeTelegram;
 import dev.vanutp.tgbridge.common.TelegramBridge;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.Association_telegram;
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.AuthorizeDuplicationException;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 public class TelegramPlatform implements ISocialPlatform {
-    private IAuthBridge bridge;
+    private ISocialBridge bridge;
     private TelegramBridge tgBridge;
 
     public TelegramPlatform() {
@@ -22,8 +23,7 @@ public class TelegramPlatform implements ISocialPlatform {
     }
 
     @Override
-    public void setAuthBridge(IAuthBridge bridge) {
-        this.bridge = bridge;
+    public void Start() {
         this.tgBridge = TelegramBridge.Companion.getINSTANCE();
 
         var self = this;
@@ -37,7 +37,12 @@ public class TelegramPlatform implements ISocialPlatform {
 //        }
     }
 
-    public IAuthBridge getBridge() {
+    @Override
+    public void setAuthBridge(ISocialBridge bridge) {
+        this.bridge = bridge;
+    }
+
+    public ISocialBridge getBridge() {
         return bridge;
     }
 

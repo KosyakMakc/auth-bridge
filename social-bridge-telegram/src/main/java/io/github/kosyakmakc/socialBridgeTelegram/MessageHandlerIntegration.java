@@ -1,3 +1,4 @@
+package io.github.kosyakmakc.socialBridgeTelegram;
 import dev.vanutp.tgbridge.common.TgbridgeEvents;
 import dev.vanutp.tgbridge.common.compat.ITgbridgeCompat;
 import dev.vanutp.tgbridge.common.models.TgbridgeTgChatMessageEvent;

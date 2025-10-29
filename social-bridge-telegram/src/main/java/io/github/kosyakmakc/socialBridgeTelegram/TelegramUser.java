@@ -1,3 +1,4 @@
+package io.github.kosyakmakc.socialBridgeTelegram;
 import dev.vanutp.tgbridge.common.TgUser;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.LocalizationService;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;

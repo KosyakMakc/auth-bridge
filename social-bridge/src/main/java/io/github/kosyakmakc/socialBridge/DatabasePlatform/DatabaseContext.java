@@ -9,7 +9,7 @@ import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.Association_tel
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.AuthSession;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.ConfigRow;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.Localization;
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 
 import java.sql.SQLException;
 import java.util.concurrent.Callable;
@@ -23,7 +23,7 @@ public class DatabaseContext {
     private final ConnectionSource connectionSource;
     private final TransactionManager transactionManager;
 
-    public DatabaseContext(IAuthBridge bridge, JdbcConnectionSource connectionSource) throws SQLException {
+    public DatabaseContext(ISocialBridge bridge, JdbcConnectionSource connectionSource) throws SQLException {
         var logger = bridge.getLogger();
         logger.info(connectionSource.getUrl());
 

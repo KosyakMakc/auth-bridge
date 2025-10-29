@@ -1,13 +1,14 @@
 package io.github.kosyakmakc.socialBridge.MinecraftPlatform;
 
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.IConfigurationService;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 
 import java.io.IOException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-public interface IMinecraftPlatform {
-    void setAuthBridge(IAuthBridge authBridge);
+public interface IMinecraftPlatform extends IConfigurationService {
+    void setAuthBridge(ISocialBridge authBridge);
 
     java.nio.file.Path getDataDirectory() throws IOException;
 

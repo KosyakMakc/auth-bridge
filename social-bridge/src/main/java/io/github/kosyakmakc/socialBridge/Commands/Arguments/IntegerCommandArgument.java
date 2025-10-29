@@ -48,7 +48,7 @@ class IntegerCommandArgument extends CommandArgument<Integer> {
         }
 
         try {
-            return Integer.parseInt(wordWriter.toString());
+            return (int) Double.parseDouble(wordWriter.toString());
         } catch (NumberFormatException e) {
             throw new ArgumentFormatException(MessageKey.INVALID_ARGUMENT_NOT_A_INTEGER);
         }

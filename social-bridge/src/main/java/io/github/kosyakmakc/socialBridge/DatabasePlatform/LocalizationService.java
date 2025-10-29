@@ -2,7 +2,7 @@ package io.github.kosyakmakc.socialBridge.DatabasePlatform;
 
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.DefaultTranslations.ITranslationSource;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.Localization;
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.MessageKey;
 
 import java.sql.SQLException;
@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
-public record LocalizationService(IAuthBridge bridge) {
+public record LocalizationService(ISocialBridge bridge) {
     static public final String defaultLocale = Locale.US.getLanguage();
 
     public String getMessage(String locale, MessageKey key) {

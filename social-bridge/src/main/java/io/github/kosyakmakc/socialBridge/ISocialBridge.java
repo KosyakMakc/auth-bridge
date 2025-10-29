@@ -6,13 +6,15 @@ import io.github.kosyakmakc.socialBridge.DatabasePlatform.ConfigurationService;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.IDatabaseConsumer;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.LocalizationService;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
+import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.logging.Logger;
 
-public interface IAuthBridge {
+public interface ISocialBridge {
     Logger getLogger();
+
     LocalizationService getLocalizationService();
     ConfigurationService getConfigurationService();
     void queryDatabase(IDatabaseConsumer action) throws SQLException;
@@ -21,4 +23,9 @@ public interface IAuthBridge {
     List<ISocialCommand> getSocialCommands();
 
     IMinecraftPlatform getMinecraftPlatform();
+
+    void registerSocialPlatform(ISocialPlatform socialPlatform);
+    void registerModule(IBridgeModule module);
+
+    void Start();
 }

@@ -2,7 +2,7 @@ package io.github.kosyakmakc.socialBridge.Commands.MinecraftCommands;
 
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
 import io.github.kosyakmakc.socialBridge.Permissions;
 
@@ -16,7 +16,7 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
     private final String literal;
     private final String permission;
     private final List<CommandArgument> argumentDefinition;
-    private IAuthBridge authBridge;
+    private ISocialBridge authBridge;
 
     public MinecraftCommandBase(String literal) {
         this(literal, Permissions.NO_PERMISSION);
@@ -52,7 +52,7 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
     }
 
     @Override
-    public void init(IAuthBridge authBridge) {
+    public void init(ISocialBridge authBridge) {
         this.authBridge = authBridge;
     }
 
@@ -80,7 +80,7 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
         execute(sender, arguments);
     }
 
-    protected IAuthBridge getBridge() {
+    protected ISocialBridge getBridge() {
         return authBridge;
     }
 }

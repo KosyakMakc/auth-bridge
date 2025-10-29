@@ -1,17 +1,19 @@
 package io.github.kosyakmakc.socialBridge.TestEnvironment;
 
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
+import io.github.kosyakmakc.socialBridge.SocialBridge;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.util.UUID;
 import java.util.logging.Logger;
 
 public class NullMinecraftPlatform implements IMinecraftPlatform {
     @Override
-    public void setAuthBridge(IAuthBridge authBridge) {
+    public void setAuthBridge(ISocialBridge authBridge) {
 
     }
 
@@ -28,5 +30,30 @@ public class NullMinecraftPlatform implements IMinecraftPlatform {
     @Override
     public MinecraftUser getUser(UUID minecraftId) {
         return null;
+    }
+
+    @Override
+    public String get(String parameter, String defaultValue) {
+        if (parameter == "connectionString") {
+            return "jdbc:h2:mem:account";
+            // return "jdbc:sqlite:social-bridge.sqlite";
+        }
+        throw new UnsupportedOperationException("Unimplemented method 'set'");
+    }
+
+    @Override
+    public boolean set(String parameter, String value) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'set'");
+    }
+
+    private static boolean isInited = false;
+    public static void Init() throws SQLException, IOException {
+        if (isInited) {
+            return;
+        }
+
+        SocialBridge.Init(new NullMinecraftPlatform());
+        isInited = true;
     }
 }

@@ -2,7 +2,7 @@ package io.github.kosyakmakc.socialBridge.Commands.SocialCommands;
 
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
-import io.github.kosyakmakc.socialBridge.IAuthBridge;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.Permissions;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.SocialUser;
 
@@ -16,7 +16,7 @@ public abstract class SocialCommandBase implements ISocialCommand {
     private final String permission;
     private final String commandName;
     private final List<CommandArgument> argumentDefinition;
-    private IAuthBridge authBridge;
+    private ISocialBridge authBridge;
 
     public SocialCommandBase(String commandName) {
         this(commandName, Permissions.NO_PERMISSION);
@@ -52,7 +52,7 @@ public abstract class SocialCommandBase implements ISocialCommand {
     }
 
     @Override
-    public void init(IAuthBridge authBridge) {
+    public void init(ISocialBridge authBridge) {
         this.authBridge = authBridge;
     }
 
@@ -83,7 +83,7 @@ public abstract class SocialCommandBase implements ISocialCommand {
         execute(sender, arguments);
     }
 
-    protected IAuthBridge getBridge() {
+    protected ISocialBridge getBridge() {
         return authBridge;
     }
 }
