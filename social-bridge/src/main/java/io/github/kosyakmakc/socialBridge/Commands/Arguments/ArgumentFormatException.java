@@ -1,8 +1,8 @@
 package io.github.kosyakmakc.socialBridge.Commands.Arguments;
 
-import io.github.kosyakmakc.socialBridge.MessageKey;
-
 import java.util.logging.Logger;
+
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
 
 public class ArgumentFormatException extends Exception {
     private final MessageKey messageKey;

@@ -1,4 +1,4 @@
-package io.github.kosyakmakc.socialBridge;
+package io.github.kosyakmakc.socialBridge.Utils;
 
 public record MessageKey(String key) {
     public static final MessageKey LOGIN_FROM_MINECRAFT = new MessageKey("login_from_minecraft");

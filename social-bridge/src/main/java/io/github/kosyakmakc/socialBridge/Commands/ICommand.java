@@ -6,8 +6,6 @@ import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import java.util.List;
 
 public interface ICommand {
-    String baseSuffixCommand = "auth";
-
     void init(ISocialBridge authBridge);
     List<CommandArgument> getArgumentDefinitions();
 

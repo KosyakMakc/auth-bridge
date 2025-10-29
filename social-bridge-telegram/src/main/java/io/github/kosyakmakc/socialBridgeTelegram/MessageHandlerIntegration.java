@@ -4,7 +4,6 @@ import dev.vanutp.tgbridge.common.compat.ITgbridgeCompat;
 import dev.vanutp.tgbridge.common.models.TgbridgeTgChatMessageEvent;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
-import io.github.kosyakmakc.socialBridge.Commands.ICommand;
 
 import java.io.StringReader;
 import java.util.Objects;
@@ -52,20 +51,23 @@ public class MessageHandlerIntegration implements ITgbridgeCompat {
         var argsReader = new StringReader(message);
 
         try {
-            // pumping "/{botSuffix}" in reader
+            // pumping "/{moduleSuffix}" in reader
             var botSuffix = systemWordArgument.getValue(argsReader);
+            
+            var modules = socialPlatform.getBridge().getSocialCommands();
+            for (var module : modules.keySet()) {
+                if (!Objects.equals(botSuffix, "/" + module.getName())) {
+                    continue;
+                }
 
-            if (!Objects.equals(botSuffix, "/" + ICommand.baseSuffixCommand)) {
-                return false;
-            }
+                // pumping {commandLiteral} in reader
+                var commandLiteral = systemWordArgument.getValue(argsReader);
 
-            // pumping {commandLiteral} in reader
-            var commandLiteral = systemWordArgument.getValue(argsReader);
-
-            for (var socialCommand : socialPlatform.getBridge().getSocialCommands()) {
-                if (commandLiteral.equals(socialCommand.getLiteral())) {
-                        socialCommand.handle(socialUser, argsReader);
-                    return true;
+                for (var socialCommand : modules.get(module)) {
+                    if (commandLiteral.equals(socialCommand.getLiteral())) {
+                            socialCommand.handle(socialUser, argsReader);
+                        return true;
+                    }
                 }
             }
         } catch (ArgumentFormatException e) {

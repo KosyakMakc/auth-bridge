@@ -7,6 +7,7 @@ import io.github.kosyakmakc.socialBridge.SocialPlatforms.AuthorizeDuplicationExc
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.SocialUser;
 
+import java.lang.Runtime.Version;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
@@ -18,8 +19,10 @@ public class TelegramPlatform implements ISocialPlatform {
     private ISocialBridge bridge;
     private TelegramBridge tgBridge;
 
-    public TelegramPlatform() {
+    private Version socialBridgeCompabilityVersion;
 
+    public TelegramPlatform(Version version) {
+        socialBridgeCompabilityVersion = version;
     }
 
     @Override
@@ -181,5 +184,10 @@ public class TelegramPlatform implements ISocialPlatform {
         }
 
         return result.get();
+    }
+
+    @Override
+    public Version getCompabilityVersion() {
+        return socialBridgeCompabilityVersion;
     }
 }

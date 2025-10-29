@@ -1,10 +1,10 @@
 package io.github.kosyakmakc.socialBridge.Commands.Arguments;
 
-import io.github.kosyakmakc.socialBridge.MessageKey;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
 
 class GreedyStringCommandArgument extends CommandArgument<String> {
     private final String name;

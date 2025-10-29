@@ -1,9 +1,9 @@
 package io.github.kosyakmakc.socialBridge.Commands.MinecraftCommands;
 
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.AuthSession;
-import io.github.kosyakmakc.socialBridge.MessageKey;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
-import io.github.kosyakmakc.socialBridge.Permissions;
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
+import io.github.kosyakmakc.socialBridge.Utils.Permissions;
 
 import java.sql.SQLException;
 import java.time.Duration;

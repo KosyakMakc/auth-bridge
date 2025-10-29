@@ -6,6 +6,7 @@ import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
 
 import java.io.IOException;
+import java.lang.Runtime.Version;
 import java.nio.file.Path;
 import java.sql.SQLException;
 import java.util.UUID;
@@ -55,5 +56,10 @@ public class NullMinecraftPlatform implements IMinecraftPlatform {
 
         SocialBridge.Init(new NullMinecraftPlatform());
         isInited = true;
+    }
+
+    @Override
+    public Version getSocialBridgeVersion() {
+        return Version.parse("0.1.0");
     }
 }

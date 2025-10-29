@@ -2,8 +2,8 @@ package io.github.kosyakmakc.socialBridge.DatabasePlatform;
 
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.DefaultTranslations.ITranslationSource;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.Localization;
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
 import io.github.kosyakmakc.socialBridge.ISocialBridge;
-import io.github.kosyakmakc.socialBridge.MessageKey;
 
 import java.sql.SQLException;
 import java.util.Locale;

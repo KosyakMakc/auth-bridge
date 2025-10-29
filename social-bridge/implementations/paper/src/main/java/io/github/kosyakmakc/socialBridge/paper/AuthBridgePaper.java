@@ -5,7 +5,6 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.github.kosyakmakc.socialBridge.SocialBridge;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
-import io.github.kosyakmakc.socialBridge.Commands.ICommand;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.LocalizationService;
 import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
@@ -20,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.lang.Runtime.Version;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -35,9 +35,11 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
     private static final CommandArgument<String> systemWordArgument = CommandArgument.ofWord("/{pluginSuffix} {commandLiteral} [arguments, ...]");
 
     private ISocialBridge authBridge;
+    private final Version socialBridgVersion;
 
     public AuthBridgePaper() {
         try {
+            socialBridgVersion = Version.parse(this.getPluginMeta().getVersion());
             SocialBridge.Init(this);
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);
@@ -54,54 +56,57 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
 
     private void SetupCommands() {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            var commandsBuilder = Commands.literal(ICommand.baseSuffixCommand);
 
-            for(var bridgeCommand : authBridge.getMinecraftCommands()) {
-                getLogger().log(Level.FINE, "Registering command - /"
-                 + ICommand.baseSuffixCommand + ' '
-                  + bridgeCommand.getLiteral() + ' '
-                   + bridgeCommand.getArgumentDefinitions().stream().map(x -> '{' + x.getName() + '}').collect(Collectors.joining(" ")));
-                
-                var cmd = Commands
-                        .literal(bridgeCommand.getLiteral())
-                        .requires(sender -> sender.getSender().hasPermission(bridgeCommand.getPermission()));
-                for (var argument : bridgeCommand.getArgumentDefinitions()) {
-                    var argumentNode = BuildArgumentNode(argument);
+            var bridgeCommands = authBridge.getMinecraftCommands();
+            for (var module : bridgeCommands.keySet()) {
+                var commandsBuilder = Commands.literal(module.getName());
 
-                    cmd = cmd.then(argumentNode);
-                }
+                for(var bridgeCommand : bridgeCommands.get(module)) {
+                    getLogger().log(Level.FINE, "Registering command - /"
+                    + module.getName() + ' '
+                    + bridgeCommand.getLiteral() + ' '
+                    + bridgeCommand.getArgumentDefinitions().stream().map(x -> '{' + x.getName() + '}').collect(Collectors.joining(" ")));
+                    
+                    var cmd = Commands
+                            .literal(bridgeCommand.getLiteral())
+                            .requires(sender -> sender.getSender().hasPermission(bridgeCommand.getPermission()));
+                    for (var argument : bridgeCommand.getArgumentDefinitions()) {
+                        var argumentNode = BuildArgumentNode(argument);
 
-                cmd.executes(ctx -> {
-                    getLogger().log(Level.FINE, "Command executed");
-                    var sender = ctx.getSource().getSender();
-
-                    var mcPlatformUser = sender instanceof Player player ? new BukkitMinecraftUser(player) : null;
-                    try {
-                        var args = ctx.getInput();
-                        var reader = new StringReader(args);
-
-                        // pumping "/{pluginSuffix}" in reader
-                        systemWordArgument.getValue(reader);
-
-                        // pumping {commandLiteral} in reader
-                        systemWordArgument.getValue(reader);
-
-                        bridgeCommand.handle(mcPlatformUser, reader);
-                    } catch (ArgumentFormatException e) {
-                        if (mcPlatformUser != null) {
-                            mcPlatformUser.sendMessage(authBridge.getLocalizationService().getMessage(mcPlatformUser.getLocale(), e.getMessageKey()), new HashMap<>());
-                        }
-                        else {
-                            getLogger().warning(authBridge.getLocalizationService().getMessage(LocalizationService.defaultLocale, e.getMessageKey()));
-                        }
+                        cmd = cmd.then(argumentNode);
                     }
-                    return SINGLE_SUCCESS;
-                });
 
-                commandsBuilder.then(cmd);
+                    cmd.executes(ctx -> {
+                        getLogger().log(Level.FINE, "Command executed");
+                        var sender = ctx.getSource().getSender();
+
+                        var mcPlatformUser = sender instanceof Player player ? new BukkitMinecraftUser(player) : null;
+                        try {
+                            var args = ctx.getInput();
+                            var reader = new StringReader(args);
+
+                            // pumping "/{moduleSuffix}" in reader
+                            systemWordArgument.getValue(reader);
+
+                            // pumping {commandLiteral} in reader
+                            systemWordArgument.getValue(reader);
+
+                            bridgeCommand.handle(mcPlatformUser, reader);
+                        } catch (ArgumentFormatException e) {
+                            if (mcPlatformUser != null) {
+                                mcPlatformUser.sendMessage(authBridge.getLocalizationService().getMessage(mcPlatformUser.getLocale(), e.getMessageKey()), new HashMap<>());
+                            }
+                            else {
+                                getLogger().warning(authBridge.getLocalizationService().getMessage(LocalizationService.defaultLocale, e.getMessageKey()));
+                            }
+                        }
+                        return SINGLE_SUCCESS;
+                    });
+
+                    commandsBuilder.then(cmd);
+                }
+                commands.registrar().register(commandsBuilder.build());
             }
-
-            commands.registrar().register(commandsBuilder.build());
         });
     }
 
@@ -187,5 +192,10 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
             this.getLogger().log(Level.SEVERE, "Failed to set parameter(" + parameter + "=" + value + ")", err);
             return false;
         }
+    }
+
+    @Override
+    public Version getSocialBridgeVersion() {
+        return socialBridgVersion;
     }
 }

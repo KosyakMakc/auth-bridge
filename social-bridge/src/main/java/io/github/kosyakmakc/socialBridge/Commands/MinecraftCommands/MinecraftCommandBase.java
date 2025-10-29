@@ -4,7 +4,7 @@ import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatExcept
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
-import io.github.kosyakmakc.socialBridge.Permissions;
+import io.github.kosyakmakc.socialBridge.Utils.Permissions;
 
 import java.io.StringReader;
 import java.util.ArrayList;

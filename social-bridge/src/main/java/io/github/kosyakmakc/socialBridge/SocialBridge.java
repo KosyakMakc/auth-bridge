@@ -8,10 +8,14 @@ import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;
 
 import java.io.IOException;
+import java.lang.Runtime.Version;
 import java.nio.file.Path;
 import java.sql.SQLException;
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.logging.Logger;
 
@@ -20,14 +24,14 @@ public class SocialBridge implements ISocialBridge {
     public static ISocialBridge INSTANCE;
 
     private final IMinecraftPlatform minecraftPlatform;
-    private final List<ISocialPlatform> socialPlatforms;
+    private final LinkedList<ISocialPlatform> socialPlatforms;
     private final DatabaseContext databaseContext;
 
     private final ConfigurationService configurationService;
     private final LocalizationService localizationService;
 
-    private final List<IMinecraftCommand> mcCommands;
-    private final List<ISocialCommand> socialCommands;
+    private final Map<IBridgeModule, List<IMinecraftCommand>> minecraftCommands = new Hashtable<>();
+    private final Map<IBridgeModule, List<ISocialCommand>> socialCommands = new Hashtable<>();
 
     private boolean isStarted = false;
 
@@ -48,26 +52,6 @@ public class SocialBridge implements ISocialBridge {
         localizationService.restoreDatabase();
 
         minecraftPlatform.setAuthBridge(this);
-
-        mcCommands = ServiceLoader.load(IMinecraftCommand.class, IMinecraftCommand.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
-        socialCommands = ServiceLoader.load(ISocialCommand.class, ISocialCommand.class.getClassLoader()).stream().map(ServiceLoader.Provider::get).toList();
-
-        getLogger().info("Minecraft commands(" + mcCommands.size() + "):");
-        for (var mcCommand : mcCommands) {
-            getLogger().info("\t\t" + mcCommand.getClass().getName());
-            mcCommand.init(this);
-        }
-        getLogger().info("Social commands(" + socialCommands.size() + "):");
-        for (var socialCommand : socialCommands) {
-            getLogger().info("\t\t" + socialCommand.getClass().getName());
-            socialCommand.init(this);
-        }
-
-        getLogger().info("Social platforms(" + socialPlatforms.size() + "):");
-        for (var socialPlatform : socialPlatforms) {
-            getLogger().info("\t\t" + socialPlatform.getClass().getName());
-            socialPlatform.setAuthBridge(this);
-        }
     }
 
     @Override
@@ -78,6 +62,23 @@ public class SocialBridge implements ISocialBridge {
         isStarted = true;
         for (ISocialPlatform socialPlatform : socialPlatforms) {
             socialPlatform.Start();
+        }
+
+        var totalMcCommands = minecraftCommands.values().stream().mapToInt(x -> x.size()).sum();
+        getLogger().info("Minecraft commands(" + totalMcCommands + "):");
+        for (var module : minecraftCommands.keySet()) {
+            for (var mcCommand : minecraftCommands.get(module)) {
+                getLogger().info("\t\t/" + module.getName() + ' ' + mcCommand.getLiteral());
+                mcCommand.init(this);
+            }
+        }
+        var totalSocialCommands = socialCommands.values().stream().mapToInt(x -> x.size()).sum();
+        getLogger().info("Social commands(" + totalSocialCommands + "):");
+        for (var module : socialCommands.keySet()) {
+            for (var socialCommand : socialCommands.get(module)) {
+                getLogger().info("\t\t/" + module.getName() + '-' + socialCommand.getLiteral());
+                socialCommand.init(this);
+            }
         }
     }
 
@@ -104,12 +105,12 @@ public class SocialBridge implements ISocialBridge {
     }
 
     @Override
-    public List<IMinecraftCommand> getMinecraftCommands() {
-        return mcCommands;
+    public Map<IBridgeModule, List<IMinecraftCommand>> getMinecraftCommands() {
+        return minecraftCommands;
     }
 
     @Override
-    public List<ISocialCommand> getSocialCommands() {
+    public Map<IBridgeModule, List<ISocialCommand>> getSocialCommands() {
         return socialCommands;
     }
 
@@ -126,22 +127,63 @@ public class SocialBridge implements ISocialBridge {
     }
 
     @Override
-    public void registerSocialPlatform(ISocialPlatform socialPlatform) {
+    public boolean registerSocialPlatform(ISocialPlatform socialPlatform) {
         if (isStarted) {
             throw new RuntimeException("Social bridge already running, register your platform on startup please");
         }
 
-        socialPlatforms.add(socialPlatform);
-        socialPlatform.setAuthBridge(this);
+        var logger = getLogger();
+        logger.info("Registering social platform - " + socialPlatform.getPlatformName() + "(" +  socialPlatform.getCompabilityVersion().toString() + ")");
+
+        var rootVersion = getVersion();
+        var childVersion = socialPlatform.getCompabilityVersion();
+        if (isCompatibleVersion(rootVersion, childVersion)) {
+            logger.warning(socialPlatform.getPlatformName() + " have incompatible social-bridge API, ignoring it...");
+            return false;
+        }
+        else {
+            socialPlatforms.add(socialPlatform);
+            socialPlatform.setAuthBridge(this);
+            logger.warning(socialPlatform.getPlatformName() + " connected");
+            return true;
+        }
     }
 
     @Override
-    public void registerModule(IBridgeModule module) {
+    public boolean registerModule(IBridgeModule module) {
         if (isStarted) {
             throw new RuntimeException("Social bridge already running, register your module on startup please");
         }
 
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'registerModule'");
+        var logger = getLogger();
+        logger.info("Registering module - " + module.getName() + "(" +  module.getCompabilityVersion().toString() + ")");
+
+        var rootVersion = getVersion();
+        var childVersion = module.getCompabilityVersion();
+        if (isCompatibleVersion(rootVersion, childVersion)) {
+            logger.warning(module.getName() + " have incompatible social-bridge API, ignoring it...");
+            return false;
+        }
+        else {
+            socialCommands.put(module, List.copyOf(module.getSocialCommands()));
+            minecraftCommands.put(module, List.copyOf(module.getMinecraftCommands()));
+            logger.warning(module.getName() + " connected");
+            return true;
+        }
+    }
+
+    private boolean isCompatibleVersion(Version rootVersion, Version childVersion) {
+        if (rootVersion.feature() != childVersion.feature()) {
+            return false;
+        }
+        if (rootVersion.interim() < childVersion.interim()) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Version getVersion() {
+        return minecraftPlatform.getSocialBridgeVersion();
     }
 }

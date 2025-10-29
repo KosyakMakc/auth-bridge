@@ -3,8 +3,8 @@ package io.github.kosyakmakc.socialBridge.Commands.SocialCommands;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatException;
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.socialBridge.ISocialBridge;
-import io.github.kosyakmakc.socialBridge.Permissions;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.SocialUser;
+import io.github.kosyakmakc.socialBridge.Utils.Permissions;
 
 import java.io.StringReader;
 import java.util.ArrayList;

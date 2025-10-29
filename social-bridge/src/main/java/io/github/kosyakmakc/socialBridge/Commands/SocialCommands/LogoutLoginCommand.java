@@ -1,7 +1,7 @@
 package io.github.kosyakmakc.socialBridge.Commands.SocialCommands;
 
-import io.github.kosyakmakc.socialBridge.MessageKey;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.SocialUser;
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
 
 import java.util.HashMap;
 import java.util.List;

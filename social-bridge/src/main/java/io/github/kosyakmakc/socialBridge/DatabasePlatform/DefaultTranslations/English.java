@@ -2,7 +2,7 @@ package io.github.kosyakmakc.socialBridge.DatabasePlatform.DefaultTranslations;
 
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.LocalizationService;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.Localization;
-import io.github.kosyakmakc.socialBridge.MessageKey;
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
 
 import java.util.List;
 

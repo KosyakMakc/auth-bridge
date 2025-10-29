@@ -2,9 +2,9 @@ package io.github.kosyakmakc.socialBridge.Commands.SocialCommands;
 
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.Tables.AuthSession;
-import io.github.kosyakmakc.socialBridge.MessageKey;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.AuthorizeDuplicationException;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.SocialUser;
+import io.github.kosyakmakc.socialBridge.Utils.MessageKey;
 
 import java.sql.SQLException;
 import java.time.Instant;
