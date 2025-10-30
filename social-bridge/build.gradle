@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'io.github.kosyakmakc'
-version = '0.1'
+version = System.getenv("VERSION") ?: project.version.toString()
 
 repositories {
     mavenCentral()
