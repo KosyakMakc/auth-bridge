@@ -1,0 +1,21 @@
+name: publish social bridge API
+
+on: workflow_dispatch
+
+jobs:
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: action/checkout@v4
+      - uses: action/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+      - name: Upload to Maven repository
+        env:
+          REGISTRY_TOKEN: ${{ secrets.MVN_PUBLISH_TOKEN }}
+        run: |
+          ./gradlew social-bridge:publish
