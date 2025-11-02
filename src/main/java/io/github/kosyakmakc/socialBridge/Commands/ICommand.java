@@ -10,6 +10,5 @@ public interface ICommand {
     @SuppressWarnings("rawtypes")
     List<CommandArgument> getArgumentDefinitions();
 
-    String getPermission();
     String getLiteral();
 }

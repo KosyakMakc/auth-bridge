@@ -7,5 +7,7 @@ import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
 import java.io.StringReader;
 
 public interface IMinecraftCommand extends ICommand {
+    String getPermission();
+
     void handle(MinecraftUser sender, StringReader argsReader) throws ArgumentFormatException;
 }

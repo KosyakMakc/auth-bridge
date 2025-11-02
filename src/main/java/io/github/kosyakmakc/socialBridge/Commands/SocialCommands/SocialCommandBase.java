@@ -4,7 +4,6 @@ import io.github.kosyakmakc.socialBridge.Commands.Arguments.ArgumentFormatExcept
 import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
 import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.SocialUser;
-import io.github.kosyakmakc.socialBridge.Utils.Permissions;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -14,35 +13,19 @@ import java.util.List;
 
 @SuppressWarnings("unused")
 public abstract class SocialCommandBase implements ISocialCommand {
-    private final String permission;
     private final String commandName;
     @SuppressWarnings("rawtypes")
     private final List<CommandArgument> argumentDefinition;
     private ISocialBridge authBridge;
 
     public SocialCommandBase(String commandName) {
-        this(commandName, Permissions.NO_PERMISSION);
-    }
-
-    public SocialCommandBase(String commandName, String permission) {
-        this(commandName, permission, new ArrayList<>());
+        this(commandName, new ArrayList<>());
     }
 
     @SuppressWarnings("rawtypes")
     public SocialCommandBase(String commandName, List<CommandArgument> argumentDefinition) {
-        this(commandName, Permissions.NO_PERMISSION, argumentDefinition);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public SocialCommandBase(String commandName, String permission, List<CommandArgument> argumentDefinition) {
-        this.permission = permission;
         this.commandName = commandName;
         this.argumentDefinition = Collections.unmodifiableList(argumentDefinition);
-    }
-
-    @Override
-    public String getPermission() {
-        return permission;
     }
 
     @Override
@@ -67,14 +50,6 @@ public abstract class SocialCommandBase implements ISocialCommand {
     public void handle(SocialUser sender, StringReader argsReader) throws ArgumentFormatException {
         if (authBridge == null) {
             getBridge().getLogger().info(this.getClass().getName() + " - initialization failed, skip handling");
-            return;
-        }
-
-        var permissionNode = getPermission();
-        var minecraftUser = sender.getMinecraftUser();
-
-        if (!permissionNode.isEmpty()
-         && (minecraftUser == null || !minecraftUser.HasPermission(getPermission()))) {
             return;
         }
 
