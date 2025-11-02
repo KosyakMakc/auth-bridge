@@ -1,0 +1,15 @@
+package io.github.kosyakmakc.socialBridge.Commands;
+
+import io.github.kosyakmakc.socialBridge.Commands.Arguments.CommandArgument;
+import io.github.kosyakmakc.socialBridge.ISocialBridge;
+
+import java.util.List;
+
+public interface ICommand {
+    void init(ISocialBridge authBridge);
+    @SuppressWarnings("rawtypes")
+    List<CommandArgument> getArgumentDefinitions();
+
+    String getPermission();
+    String getLiteral();
+}

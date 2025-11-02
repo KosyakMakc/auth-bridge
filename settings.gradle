@@ -1,5 +1,2 @@
-include "social-bridge"
-include "social-bridge:implementations:paper"
-
-include "social-bridge-telegram"
-include 'social-bridge-telegram:implementations:social-bridge-telegram-paper'
+include ":"
+include ":implementations:paper"
