@@ -21,4 +21,9 @@ public abstract class SocialUser {
 
     @SuppressWarnings("unused")
     public abstract String getLocale();
+
+    @SuppressWarnings("unused")
+    public abstract SocialUserIdType getIdType();
+    @SuppressWarnings("unused")
+    public abstract Object getId();
 }
