@@ -28,4 +28,4 @@ jobs:
           REGISTRY_TOKEN: ${{ secrets.MVN_PUBLISH_TOKEN }}
           VERSION: ${{ steps.latest_tag.outputs.tag }}-${{ github.run_number }}
         run: |
-          ./gradlew social-bridge:publish
+          ./gradlew :publish
