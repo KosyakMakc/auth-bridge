@@ -59,9 +59,14 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
 
             for (var module : authBridge.getModules()) {
+                var mcCommands = module.getMinecraftCommands();
+                if (mcCommands.isEmpty()) {
+                    continue;
+                }
+
                 var commandsBuilder = Commands.literal(module.getName());
 
-                for(var bridgeCommand : module.getMinecraftCommands()) {
+                for(var bridgeCommand : mcCommands) {
                     getLogger().log(Level.FINE, "Registering command - /"
                     + module.getName() + ' '
                     + bridgeCommand.getLiteral() + ' '

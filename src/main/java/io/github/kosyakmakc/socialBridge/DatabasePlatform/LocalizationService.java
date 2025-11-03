@@ -49,11 +49,12 @@ public record LocalizationService(ISocialBridge bridge) {
         var allRecords = 0;
 
         var modules = bridge.getModules();
-        logger.info("Localization sources(" + modules.stream().mapToInt(x -> x.getTranslations().size()) + "):");
+        logger.info("Localization sources(" + modules.size() + "):");
         for (var module : modules) {
             for (var source : module.getTranslations()) {
-                logger.info("\t\t" + source.getClass().getName());
-                for (var record : source.getRecords()) {
+                var records = source.getRecords();
+                logger.info("\t\t" + source.getClass().getName() + "(" + records.size() + ")");
+                for (var record : records) {
                     allRecords++;
                     try {
                         bridge.queryDatabase(databaseContext -> {

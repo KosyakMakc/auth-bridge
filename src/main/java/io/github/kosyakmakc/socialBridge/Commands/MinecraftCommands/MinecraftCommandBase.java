@@ -17,7 +17,7 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
     private final String permission;
     @SuppressWarnings("rawtypes")
     private final List<CommandArgument> argumentDefinition;
-    private ISocialBridge authBridge;
+    private ISocialBridge bridge;
 
     @SuppressWarnings("unused")
     public MinecraftCommandBase(String literal) {
@@ -57,15 +57,15 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
     }
 
     @Override
-    public void init(ISocialBridge authBridge) {
-        this.authBridge = authBridge;
+    public void init(ISocialBridge bridge) {
+        this.bridge = bridge;
     }
 
     public abstract void execute(MinecraftUser sender, List<Object> args);
 
     @Override
     public void handle(MinecraftUser sender, StringReader argsReader) throws ArgumentFormatException {
-        if (authBridge == null) {
+        if (bridge == null) {
             getBridge().getLogger().info(this.getClass().getName() + " - initialization failed, skip handling");
             return;
         }
@@ -86,6 +86,6 @@ public abstract class MinecraftCommandBase implements IMinecraftCommand {
     }
 
     protected ISocialBridge getBridge() {
-        return authBridge;
+        return bridge;
     }
 }

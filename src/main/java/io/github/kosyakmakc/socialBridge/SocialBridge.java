@@ -45,7 +45,6 @@ public class SocialBridge implements ISocialBridge {
         localizationService = new LocalizationService(this);
 
         new ApplyDatabaseMigrations().accept(this);
-        localizationService.restoreDatabase();
 
         minecraftPlatform.setAuthBridge(this);
     }
@@ -55,8 +54,11 @@ public class SocialBridge implements ISocialBridge {
         if (isStarted) {
             throw new RuntimeException("Social bridge already running");
         }
+        localizationService.restoreDatabase();
         isStarted = true;
+        getLogger().info("Social platforms(" + socialPlatforms.size() + "):");
         for (ISocialPlatform socialPlatform : socialPlatforms.values()) {
+            getLogger().info("\t\t" + socialPlatform.getPlatformName());
             socialPlatform.Start();
         }
 
@@ -140,14 +142,14 @@ public class SocialBridge implements ISocialBridge {
         var rootVersion = getVersion();
         var childVersion = socialPlatform.getCompabilityVersion();
         if (rootVersion.isCompatible(childVersion)) {
-            logger.warning(socialPlatform.getPlatformName() + " have incompatible social-bridge API, ignoring it...");
-            return false;
-        }
-        else {
             socialPlatforms.put(socialPlatform.getClass(), socialPlatform);
             socialPlatform.setAuthBridge(this);
             logger.warning(socialPlatform.getPlatformName() + " connected");
             return true;
+        }
+        else {
+            logger.warning(socialPlatform.getPlatformName() + " have incompatible social-bridge API, ignoring it...");
+            return false;
         }
     }
 
@@ -163,10 +165,6 @@ public class SocialBridge implements ISocialBridge {
         var rootVersion = getVersion();
         var childVersion = module.getCompabilityVersion();
         if (rootVersion.isCompatible(childVersion)) {
-            logger.warning(module.getName() + " have incompatible social-bridge API, ignoring it...");
-            return false;
-        }
-        else {
             if (module.init(this)) {
                 bridgeModules.put(module.getClass(), module);
                 logger.info(module.getName() + " connected");
@@ -176,6 +174,10 @@ public class SocialBridge implements ISocialBridge {
                 logger.warning(module.getName() + " init failed");
                 return false;
             }
+        }
+        else {
+            logger.warning(module.getName() + " have incompatible social-bridge API, ignoring it...");
+            return false;
         }
     }
 

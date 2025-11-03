@@ -9,9 +9,15 @@ import io.github.kosyakmakc.socialBridge.Utils.Version;
 import java.util.List;
 
 public class DefaultModule implements IBridgeModule{
+
+    public static final Version VERSION = new Version(0, 1, 0);
+    public static final List<ITranslationSource> translationSources = List.of(new English());
+    public static final List<IMinecraftCommand> minecraftCommands = List.of();
+    public static final List<ISocialCommand> socialCommands = List.of();
+
     @Override
     public Version getCompabilityVersion() {
-        return new Version(0, 1, 0);
+        return VERSION;
     }
 
     @Override
@@ -21,17 +27,17 @@ public class DefaultModule implements IBridgeModule{
 
     @Override
     public List<ISocialCommand> getSocialCommands() {
-        return List.of();
+        return socialCommands;
     }
 
     @Override
     public List<IMinecraftCommand> getMinecraftCommands() {
-        return List.of();
+        return minecraftCommands;
     }
 
     @Override
     public List<ITranslationSource> getTranslations() {
-        return List.of(new English());
+        return translationSources;
     }
 
     @Override

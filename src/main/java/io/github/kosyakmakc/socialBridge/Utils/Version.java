@@ -18,8 +18,8 @@ public class Version {
         }
 
         this.major = Integer.parseInt(tokens[0]);
-        this.minor = tokens.length > 1 ? Integer.parseInt(tokens[0]) : 0;
-        this.patch = tokens.length > 2 ? Integer.parseInt(tokens[0]) : 0;
+        this.minor = tokens.length > 1 ? Integer.parseInt(tokens[1]) : 0;
+        this.patch = tokens.length > 2 ? Integer.parseInt(tokens[2]) : 0;
     }
 
     public int getMajor() {
