@@ -4,9 +4,9 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.*;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;
+import io.github.kosyakmakc.socialBridge.Utils.Version;
 
 import java.io.IOException;
-import java.lang.Runtime.Version;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -139,7 +139,7 @@ public class SocialBridge implements ISocialBridge {
 
         var rootVersion = getVersion();
         var childVersion = socialPlatform.getCompabilityVersion();
-        if (isCompatibleVersion(rootVersion, childVersion)) {
+        if (rootVersion.isCompatible(childVersion)) {
             logger.warning(socialPlatform.getPlatformName() + " have incompatible social-bridge API, ignoring it...");
             return false;
         }
@@ -162,7 +162,7 @@ public class SocialBridge implements ISocialBridge {
 
         var rootVersion = getVersion();
         var childVersion = module.getCompabilityVersion();
-        if (isCompatibleVersion(rootVersion, childVersion)) {
+        if (rootVersion.isCompatible(childVersion)) {
             logger.warning(module.getName() + " have incompatible social-bridge API, ignoring it...");
             return false;
         }
@@ -193,16 +193,6 @@ public class SocialBridge implements ISocialBridge {
         else {
             return null;
         }
-    }
-
-    private boolean isCompatibleVersion(Version rootVersion, Version childVersion) {
-        if (rootVersion.feature() == 0 && childVersion.feature() == 0) {
-            return rootVersion.interim() == childVersion.interim();
-        }
-        else if (rootVersion.feature() != childVersion.feature()) {
-            return false;
-        }
-        return rootVersion.interim() >= childVersion.interim();
     }
 
     @Override

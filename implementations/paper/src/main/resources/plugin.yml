@@ -1,4 +1,4 @@
-name: social-bridge-paper
+name: SocialBridge-paper
 version: '0.1.0'
 main: io.github.kosyakmakc.socialBridge.paper.AuthBridgePaper
 api-version: '1.21'

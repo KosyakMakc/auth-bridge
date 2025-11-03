@@ -9,6 +9,7 @@ import io.github.kosyakmakc.socialBridge.ISocialBridge;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.MinecraftUser;
 import io.github.kosyakmakc.socialBridge.SocialBridge;
+import io.github.kosyakmakc.socialBridge.Utils.Version;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -19,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.lang.Runtime.Version;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.SQLException;
@@ -40,7 +40,7 @@ public final class AuthBridgePaper extends JavaPlugin implements IMinecraftPlatf
 
     public AuthBridgePaper() {
         try {
-            socialBridgVersion = Version.parse(this.getPluginMeta().getVersion());
+            socialBridgVersion = new Version(this.getPluginMeta().getVersion());
             SocialBridge.Init(this);
         } catch (SQLException | IOException e) {
             throw new RuntimeException(e);

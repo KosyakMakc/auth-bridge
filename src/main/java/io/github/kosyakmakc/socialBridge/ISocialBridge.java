@@ -5,8 +5,8 @@ import io.github.kosyakmakc.socialBridge.DatabasePlatform.IDatabaseConsumer;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.LocalizationService;
 import io.github.kosyakmakc.socialBridge.MinecraftPlatform.IMinecraftPlatform;
 import io.github.kosyakmakc.socialBridge.SocialPlatforms.ISocialPlatform;
+import io.github.kosyakmakc.socialBridge.Utils.Version;
 
-import java.lang.Runtime.Version;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.logging.Logger;

@@ -4,13 +4,14 @@ import io.github.kosyakmakc.socialBridge.Commands.MinecraftCommands.IMinecraftCo
 import io.github.kosyakmakc.socialBridge.Commands.SocialCommands.ISocialCommand;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.DefaultTranslations.English;
 import io.github.kosyakmakc.socialBridge.DatabasePlatform.DefaultTranslations.ITranslationSource;
+import io.github.kosyakmakc.socialBridge.Utils.Version;
 
 import java.util.List;
 
 public class DefaultModule implements IBridgeModule{
     @Override
-    public Runtime.Version getCompabilityVersion() {
-        return null;
+    public Version getCompabilityVersion() {
+        return new Version(0, 1, 0);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package io.github.kosyakmakc.socialBridge.SocialPlatforms;
 
 import io.github.kosyakmakc.socialBridge.ISocialBridge;
+import io.github.kosyakmakc.socialBridge.Utils.Version;
 
-import java.lang.Runtime.Version;
 import java.util.HashMap;
 
 public interface ISocialPlatform {
